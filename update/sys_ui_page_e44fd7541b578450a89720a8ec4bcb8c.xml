@@ -16,40 +16,18 @@
 	<h2>Features</h2>
 	<p>DevTools contains a number of&#160;<b>script includes</b>&#160;with useful javascript functions and classes like a GetType() function that realy works. A few&#160;<b>UI improvements</b>&#160;like the Re-Test button in the test result form and&#160;<b>shortcuts</b>&#160;to various - sometimes hidden - views and system properties in your instance.</p>
 
-	<h2>Reference</h2>
-	<p><b>ArrayUnique</b>&#160;Returns an array with unique values only.</p>
-	<p><b>ArrayValueExists</b>&#160;Checks if a value exists in an array and returns true in that case, otherwise false.</p>
-	<p><b>Debug</b>&#160;Produce a debug log output but only if x_snc_devtools.debug.log is set to true.</p>
-	<p><b>GetArrayValue</b>&#160;Returns an array no matter what input type is given and performs necessary conversion if another type is provided.</p>
-	<p><b>GetBoolValue</b>&#160;Returns either true or false no matter what kind of value is given.</p>
-	<p><b>GetGroupsFromUser</b>&#160;Returns all groups of a given user.</p>
-	<p><b>GetIntegerValue</b>&#160;Returns an integer value.</p>
-	<p><b>GetRecordFromTestStep</b>&#160;Returns the sys_id of the record that has been created or found in the given test step.</p>
-	<p><b>GetStringValue</b>&#160;	Returns a string value in all cases. Arrays and objects are converted into comma separated strings.</p>
-	<p><b>GetType</b>&#160;Returns the type of a value.</p>
-	<p><b>GetValue</b>&#160;Returns the value of an object that is (or is not) part of an recursive object without generating errors if the object does not exist.</p>
-	<p><b>HttpRequest</b>&#160;Performs a single http request.</p>
-	<p><b>IsEqual</b>&#160;Checks if two values are equal. The function also supports arrays and can ignore the order of array elements while comparing.</p>
-	<p><b>IsUserHasRoleExactly</b>&#160;Returns true of the current user has the provided role explicitly. Returns true if that is the case, returns false if not. If an admin does not explicitly have that role, it will also return false.</p>
-	<p><b>IsValidRecord</b>&#160;Checks if the given record is a valid glide record object. Returns true if it is, false if not.</p>
-	<p><b>IsValidSysId</b>&#160;Checks if the given string is a syntactically correct sys_id. Returns true if it is, false if not.</p>
-	<p><b>LoadMessages</b>&#160;Loads all local test messages for an "application".</p>
-	<p><b>Log</b>&#160;Produces a log output</p>
-	<p><b>ParseDateTime</b>&#160;Parses a string and returns a time value.</p>
-	<p><b>ParseJson</b>&#160;Parses a string and returns an object or false in case of failure (instead of pointlessly throwing an exception).</p>
-	<p><b>RenderValue</b>&#160;Render any value as a string.</p>
-	<p><b>TestDataAPI</b>&#160;A class to to create test data records.</p>
-	
 	<h2>System Requirements</h2>
 	<ul>
-		<li>Madrid or later</li>
+		<li>Madrid, New York, Orlando or Paris</li>
 	</ul>
 	
 	<h2>Installation</h2>
 	<p>To use the full potential of DevTools perform the following steps:</p>
 	<ol>
 		<li>Fork this repository: <a href="https://github.com/saschawildgrube/servicenow-devtools" target="_blank">https://github.com/saschawildgrube/servicenow-devtools</a></li>
-		<li>Install the application by importing from source control.</li>
+		<li>Paris or later: Add credentials to access GitHub (Use "Basic Auth")</li> 
+		<li>Install the application by importing it from source control in Studio.</li>
+		<li>Switch to global scope</li>
 		<li>Enable create, read, write and delete operations for all applications on the following tables:
 			<ol>
 				<li><a href="/sys_db_object.do?sys_id=sys_properties&amp;sysparm_refkey=name" target="_blank">sys_properties</a></li>
@@ -65,11 +43,30 @@
 			</ol>
 		</li>
 		<li>Go to the "Install Script" module and execute the script.</li>
-		<li>Go to the "Install Log" module and check for error messages.</li>
+		<li>Go to the "Install Log" module and check for error messages. In case of errors, wait a few minutes and retry. The access changes to the tables might take a few minutes to be effective.</li>
 		<li>Go to&#160;<a href="/system_properties_ui.do?sysparm_title=Instance%20Debug%20Options&amp;sysparm_category=devtools.instance.debug" target="_blank">Instance Debug Options</a>&#160;and activate the ATF test execution (if not set already).</li>
 		<li>Run the&#160;<a href="/sys_atf_test_suite.do?sys_id=4a8550391b5b8850a89720a8ec4bcbd9&amp;sysparm_view=DevTools&amp;sysparm_view_forced=true" target="_blank">DevTools Test Suite</a></li>
+		<li>In case of errors (especially with the tests "DevTools - GetGroupsFromUser" and "DevTools - TestDataAPI") retry after a few minutes. Some cross-scrope privileges will be set up during the first test run and might take a few minutes to be effective.</li> 
 	</ol>
+	
+	
+	<h2>Reference</h2>
+	<g2:evaluate var="jvar_strScriptIncludes" jelly="true">
+		var grSSI = new GlideRecord('sys_script_include');
+		grSSI.addQuery('sys_scope','=','d689f6901bd38450a89720a8ec4bcbfd');
+		grSSI.addQuery('access','=','public');
+		grSSI.orderBy('name');
+		grSSI.query();
 
+		var strScriptIncludes = '';
+		while (grSSI.next())
+		{
+			var strDescription = HtmlEncode(grSSI.getValue('description'));
+			strScriptIncludes = strScriptIncludes + '<p><b>'+grSSI.getValue('name')+'</b>&#160;'+strDescription+'</p>';
+		}
+		strScriptIncludes;	
+	</g2:evaluate>
+	<g2:no_escape>$[jvar_strScriptIncludes]</g2:no_escape>
 	
 	<h2>License</h2>
 	<p>Copyright 2020 by Sascha Wildgrube</p>
@@ -79,6 +76,14 @@
 	<p>Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.</p>	
 	
 	<h2>Release Notes</h2>
+	<h3>1.3.0 - 2020-11-04</h3>
+	<ol>
+		<li>Added class TransactionCacheAPI.</li>
+		<li>Added function HtmlEncode().</li>
+		<li>Added function GetKeys().</li>
+		<li>Added function StringRemoveCharacters().</li>
+		<li>Part of the documentation is generated automatically based on record descriptions.</li>
+	</ol>
 	<h3>1.2.4 - 2020-09-10</h3>
 	<ol>
 		<li>ParseDateTime() has been repaired, aligned to UTC and the corresponding test has been implemented.</li>
@@ -110,7 +115,7 @@
 	<h3>1.2.0 - 2020-07-07</h3>
 	<ol>
 		<li>Added TestDataAPI.CreateRequest() and extended the ATF test "DevTools - TestDataAPI"</li>
-		<li>Refactoring of several functions in TestDataAPI. Caller and Opener users can now explicitly set.</li>
+		<li>Refactoring of several functions in TestDataAPI. Caller and Opener users can now be set explicitly.</li>
 		<li>Added function IsValidRecord()</li>
 	</ol>	
 	<h3>1.1.0 - 2020-07-03</h3>
@@ -128,13 +133,13 @@
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2020-02-27 11:17:42</sys_created_on>
         <sys_id>e44fd7541b578450a89720a8ec4bcb8c</sys_id>
-        <sys_mod_count>74</sys_mod_count>
+        <sys_mod_count>114</sys_mod_count>
         <sys_name>Start</sys_name>
         <sys_package display_value="DevTools" source="x_snc_devtools">d689f6901bd38450a89720a8ec4bcbfd</sys_package>
         <sys_policy/>
         <sys_scope display_value="DevTools">d689f6901bd38450a89720a8ec4bcbfd</sys_scope>
         <sys_update_name>sys_ui_page_e44fd7541b578450a89720a8ec4bcb8c</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2020-09-10 13:05:30</sys_updated_on>
+        <sys_updated_on>2020-11-04 14:03:56</sys_updated_on>
     </sys_ui_page>
 </record_update>
